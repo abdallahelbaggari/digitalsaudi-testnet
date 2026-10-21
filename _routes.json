@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "include": [
+    "/approve",
+    "/complete",
+    "/cancel-payment",
+    "/scores",
+    "/news",
+    "/pi-price",
+    "/premium",
+    "/places",
+    "/directory",
+    "/events",
+    "/admin-api",
+    "/ai",
+    "/tts",
+    "/dict",
+    "/pi-check",
+    "/translate",
+    "/weather",
+    "/poster-file",
+    "/quran",
+    "/match",
+    "/quran-audio",
+    "/referral"
+  ],
+  "exclude": []
+}
