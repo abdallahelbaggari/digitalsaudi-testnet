@@ -3824,7 +3824,7 @@ function buyPremium(tier){
 function piLogin(){
   if(typeof Pi === 'undefined'){ toast('Please open DigitalSaudi in the Pi Browser'); return; }
   const btn = $('loginBtn'); if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Connecting…'; }
-  Pi.init({ version:'2.0', sandbox:false });
+  Pi.init({ version:'2.0', sandbox:true });
   const authTimeout = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 25000); });
   Promise.race([Pi.authenticate(['username','payments'], onIncompletePaymentFound), authTimeout]).then(function(auth){
     piUser = auth.user; piUser.accessToken = auth.accessToken;
@@ -3883,7 +3883,7 @@ function showStuckPayment(){
 }
 function clearStuckPayment(){
   if(typeof Pi === 'undefined') return toast('Open DigitalSaudi in the Pi Browser');
-  Pi.init({ version:'2.0', sandbox:false });
+  Pi.init({ version:'2.0', sandbox:true });
   showPanel('Unfinished payment', '<div class="lock-wrap"><div class="big">⏳</div><h3>Checking with Pi…</h3></div>', { id:'stuckPay', share:false });
   let found = false;
   Pi.authenticate(['username','payments'], function(p){ found = true; onIncompletePaymentFound(p); })
@@ -3896,7 +3896,7 @@ function submitPiPayment(amount, memo, metadata, btn){
   if(typeof Pi === 'undefined'){ toast('Payments work only in the Pi Browser'); return; }
   if(!piUser){ pendingAction = function(){ submitPiPayment(amount, memo, metadata, btn); }; piLogin(); return; }
   if(metadata && metadata.type === 'premium') metadata.uid = piUser.uid;
-  Pi.init({ version:'2.0', sandbox:false });
+  Pi.init({ version:'2.0', sandbox:true });
   const label = btn ? btn.innerHTML : '';
   if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner" style="margin:0 auto"></div>'; }
   const reset = function(){ if(btn && document.body.contains(btn)){ btn.disabled = false; btn.innerHTML = label; } };
