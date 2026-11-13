@@ -28,6 +28,8 @@
 <link rel="dns-prefetch" href="https://api.alquran.cloud">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..700&family=Reem+Kufi:wght@500..700&display=swap">
+<script>window.PI_SANDBOX=(function(){try{var r=document.referrer||'',a=location.ancestorOrigins?[].slice.call(location.ancestorOrigins).join(' '):'';return /sandbox\.minepi\.com/.test(r+' '+a);}catch(e){return false;}})();
+function piInit(){ if(window.__piReady) return; Pi.init({ version: "2.0", sandbox: window.PI_SANDBOX }); window.__piReady = true; }</script>
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <style>
 :root{
@@ -4626,7 +4628,7 @@ function piLogin() {
     btn.disabled = true;
     btn.innerHTML = '<div class="spinner"></div> Connecting\u2026';
   }
-  Pi.init({ version: "2.0", sandbox: true });
+  piInit();
   const authTimeout = new Promise(function(_, rej) {
     setTimeout(function() {
       rej(new Error("timeout"));
@@ -4727,7 +4729,7 @@ function showStuckPayment() {
 }
 function clearStuckPayment() {
   if (typeof Pi === "undefined") return toast("Open DigitalSaudi in the Pi Browser");
-  Pi.init({ version: "2.0", sandbox: true });
+  piInit();
   showPanel("Unfinished payment", '<div class="lock-wrap"><div class="big">\u23F3</div><h3>Checking with Pi\u2026</h3></div>', { id: "stuckPay", share: false });
   let found = false;
   Pi.authenticate(["username", "payments"], function(p) {
@@ -4757,7 +4759,7 @@ function submitPiPayment(amount, memo, metadata, btn) {
     return;
   }
   if (metadata && metadata.type === "premium") metadata.uid = piUser.uid;
-  Pi.init({ version: "2.0", sandbox: true });
+  piInit();
   const label = btn ? btn.innerHTML : "";
   if (btn) {
     btn.disabled = true;
