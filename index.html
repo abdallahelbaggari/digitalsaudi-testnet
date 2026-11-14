@@ -3821,25 +3821,45 @@ function buyPremium(tier){
 }
 
 /* ================= PI AUTH ================= */
+/* Pi.init must run only once per page: calling it again before every sign-in can leave Pi.authenticate waiting. */
+let piInited = false, authInFlight = null, authStartedAt = 0;
+function initPi(){ if(!piInited){ Pi.init({ version:'2.0', sandbox:false }); piInited = true; } }
+function onPiAuth(auth){
+  piUser = auth.user; piUser.accessToken = auth.accessToken;
+  log('✅ Authenticated:', piUser.username);
+  store.set('lastUser', piUser.username);
+  enterApp();
+  award('pioneer');
+  toast('Welcome, @' + piUser.username);
+  syncPremium();
+  if(pendingAction){ const a = pendingAction; pendingAction = null; a(); }
+}
 function piLogin(){
   if(typeof Pi === 'undefined'){ log('Pi SDK missing: open from the Pi Browser'); toast('Please open DigitalSaudi in the Pi Browser'); return; }
-  const btn = $('loginBtn'); if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Connecting…'; }
-  log('Sign-in started');
-  Pi.init({ version:'2.0', sandbox:false });
-  const authTimeout = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, 25000); });
-  Promise.race([Pi.authenticate(['username','payments'], onIncompletePaymentFound), authTimeout]).then(function(auth){
-    piUser = auth.user; piUser.accessToken = auth.accessToken;
-    log('✅ Authenticated:', piUser.username);
-    store.set('lastUser', piUser.username);
-    enterApp();
-    award('pioneer');
-    toast('Welcome, @' + piUser.username);
-    syncPremium();
-    if(pendingAction){ const a = pendingAction; pendingAction = null; a(); }
-  }).catch(function(err){
-    log('❌ Sign-in failed:', err && err.message ? err.message : err);
-    toast(err && err.message === 'timeout' ? 'Sign-in is taking too long. Open DigitalSaudi from the Pi Browser app link (not the pages.dev address) and try again.' : 'Sign-in failed. Please try again in the Pi Browser.');
-  }).finally(function(){ if(btn){ btn.disabled = false; btn.innerHTML = '<span>π</span> Sign in with Pi'; } });
+  const btn = $('loginBtn');
+  const resetBtn = function(){ if(btn){ btn.disabled = false; btn.innerHTML = '<span>π</span> Sign in with Pi'; } };
+  if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Connecting…'; }
+  initPi();
+  // Reuse a sign-in that is still running instead of starting a second one; start fresh only if it has hung for 20 s or more.
+  if(!authInFlight || Date.now() - authStartedAt >= 20000){
+    log('Sign-in started');
+    authStartedAt = Date.now();
+    const attempt = Pi.authenticate(['username','payments'], onIncompletePaymentFound).then(function(auth){
+      if(authInFlight === attempt) authInFlight = null;
+      if(!piUser) onPiAuth(auth);
+    }, function(err){
+      if(authInFlight === attempt) authInFlight = null;
+      log('❌ Sign-in failed:', err && err.message ? err.message : err);
+      if(!piUser) toast('Sign-in failed. Please try again in the Pi Browser.');
+    });
+    authInFlight = attempt;
+  }
+  const current = authInFlight;
+  // A slow answer from Pi is not a failure: keep waiting and sign in as soon as Pi replies.
+  const slow = setTimeout(function(){
+    if(authInFlight === current && !piUser){ resetBtn(); toast('Still connecting to Pi… you will be signed in when Pi answers. If nothing happens, tap Sign in again.'); }
+  }, 20000);
+  current.then(function(){ clearTimeout(slow); resetBtn(); });
 }
 function dsWaitToken(ms){
   return new Promise(function(res){
@@ -3885,7 +3905,7 @@ function showStuckPayment(){
 }
 function clearStuckPayment(){
   if(typeof Pi === 'undefined') return toast('Open DigitalSaudi in the Pi Browser');
-  Pi.init({ version:'2.0', sandbox:false });
+  initPi();
   showPanel('Unfinished payment', '<div class="lock-wrap"><div class="big">⏳</div><h3>Checking with Pi…</h3></div>', { id:'stuckPay', share:false });
   let found = false;
   Pi.authenticate(['username','payments'], function(p){ found = true; onIncompletePaymentFound(p); })
@@ -3898,7 +3918,7 @@ function submitPiPayment(amount, memo, metadata, btn){
   if(typeof Pi === 'undefined'){ toast('Payments work only in the Pi Browser'); return; }
   if(!piUser){ pendingAction = function(){ submitPiPayment(amount, memo, metadata, btn); }; piLogin(); return; }
   if(metadata && metadata.type === 'premium') metadata.uid = piUser.uid;
-  Pi.init({ version:'2.0', sandbox:false });
+  initPi();
   const label = btn ? btn.innerHTML : '';
   if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner" style="margin:0 auto"></div>'; }
   const reset = function(){ if(btn && document.body.contains(btn)){ btn.disabled = false; btn.innerHTML = label; } };
