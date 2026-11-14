@@ -6,7 +6,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
   'Content-Type': 'application/json'
 };
-const json = (obj) => new Response(JSON.stringify(obj), { status: 200, headers: CORS });
+const json = (obj) => { try { console.log('[approve]', JSON.stringify(obj).slice(0, 600)); } catch (e) {} return new Response(JSON.stringify(obj), { status: 200, headers: CORS }); };
 const ID_RE = /^[A-Za-z0-9_-]{6,128}$/;
 
 
