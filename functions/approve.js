@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
     const meta = p.metadata || {}, amount = Number(p.amount);
     const PRICES = { monthly: 1, lifetime: 5 };
     let why = '';
-    if (!(amount > 0) || amount > 10000) why = 'Invalid amount';
+    if (!(amount > 0) || (meta.type !== 'transfer' && amount > 10000)) why = 'Invalid amount';
     else if (meta.app && meta.app !== 'DigitalSaudi') why = 'Not a DigitalSaudi payment';
     else if (meta.type !== 'premium' && meta.type !== 'support' && meta.type !== 'transfer') why = 'Unknown payment type';
     else if (meta.type === 'premium' && amount < (PRICES[meta.tier] || PRICES.monthly)) why = 'Amount too low for this plan';

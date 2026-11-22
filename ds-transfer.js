@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   var TESTNET = /(^|[.-])testnet[.-]/i.test(location.hostname), NETN = TESTNET ? 'Pi Testnet' : 'Pi Mainnet';
-  var CFG = { enabled: false, usernames: false, fee: 0.01, max: 50, daily: 200 };
+  var CFG = { enabled: false, usernames: false, fee: 0.01, max: 0, daily: 0 };
   var r7 = function (n) { return Math.round(Number(n) * 1e7) / 1e7; };
   var num = function (n) { return fmt(n, 7); };
   var me = function () { return piUser ? piUser.username : ''; };
@@ -83,7 +83,7 @@
       '<div class="field"><label>Amount (π)</label><input id="txA" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00"></div><div class="small" id="txC" style="margin:-4px 0 10px"></div>' +
       '<div class="field"><label>What is it for?</label><input id="txX" maxlength="80" placeholder="e.g. Rent share, gift, shop order"></div>' +
       '<div id="txSum"></div><button class="btn btn-primary" style="width:100%" id="txGo">Continue</button>' +
-      '<div class="note" style="margin-top:12px">🔒 You approve every payment yourself in Pi’s pop-up. DigitalSaudi never sees your passphrase. For your safety: up to ' + CFG.max + ' π per transfer and ' + CFG.daily + ' π a day. Transfers cannot be reversed once delivered.</div>',
+      '<div class="note" style="margin-top:12px">🔒 You approve every payment yourself in Pi’s pop-up. DigitalSaudi never sees your passphrase. ' + (CFG.max || CFG.daily ? 'Limits: ' + (CFG.max ? 'up to ' + CFG.max + ' π per transfer. ' : '') + (CFG.daily ? 'Up to ' + CFG.daily + ' π a day. ' : '') : 'No transfer limits. ') + 'Transfers cannot be reversed once delivered.</div>',
       { id: 'dsSend', share: false });
     var to = $('txTo'), a = $('txA'), ok = null, timer = null;
     function setMode(m) {
@@ -129,7 +129,7 @@
       var v = r7(a.value), x = $('txX').value.trim();
       if (!ok) return toast(mode === 'user' ? 'Enter a DigitalSaudi user’s @username' : 'Enter a valid Pi wallet address');
       if (!(v >= 0.01)) return toast('The smallest transfer is 0.01 π');
-      if (v > CFG.max) return toast('The most you can send at once is ' + CFG.max + ' π');
+      if (CFG.max && v > CFG.max) return toast('The most you can send at once is ' + CFG.max + ' π');
       if (!x) return toast('Add what this payment is for');
       var btn = $('txGo'); btn.disabled = true; btn.textContent = 'Checking…';
       var body = { a: 'check', accessToken: tok(), amt: v }; if (mode === 'user') body.to = ok; else body.addr = ok;
@@ -210,7 +210,7 @@
 
   function start() {
     api('/transfer?a=status').then(function (d) {
-      if (d && d.ok) { CFG.enabled = !!d.enabled; CFG.usernames = !!d.usernames; CFG.fee = d.fee || 0.01; CFG.max = d.max || 50; CFG.daily = d.daily || 200; }
+      if (d && d.ok) { CFG.enabled = !!d.enabled; CFG.usernames = !!d.usernames; CFG.fee = d.fee || 0.01; CFG.max = d.max || 0; CFG.daily = d.daily || 0; }
       register(); sync();
     }).catch(function () {});
     var n = 0, iv = setInterval(function () { register(); if (registered || ++n > 150) clearInterval(iv); }, 2000);
