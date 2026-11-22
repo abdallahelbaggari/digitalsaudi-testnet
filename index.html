@@ -3959,6 +3959,7 @@ function submitPiPayment(amount, memo, metadata, btn){
   });
 }
 function applyPaymentEffect(metadata, amount, paymentId){
+  if(metadata && metadata.type === 'transfer'){ if(window.dsTransferSync) dsTransferSync(); return; }
   if(metadata && metadata.type === 'premium'){
     recordPremium(paymentId, metadata.tier || 'monthly').then(function(){ toast('⭐ Premium unlocked — thank you!'); });
   } else {
@@ -10257,6 +10258,7 @@ if(DS_TESTNET){
 
 </script>
 <script src="/ds-receipt.js?v=1"></script>
-<script src="/ds-wallet.js?v=4"></script>
+<script src="/ds-wallet.js?v=5"></script>
+<script src="/ds-transfer.js?v=1"></script>
 </body>
 </html>

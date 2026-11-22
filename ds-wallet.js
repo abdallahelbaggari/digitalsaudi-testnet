@@ -181,7 +181,7 @@
       <div class="dw-tabs">${[['all', 'All'], ['in', 'Received'], ['out', 'Paid']].map(function (x) { return `<button data-f="${x[0]}" class="${filter === x[0] ? 'on' : ''}" onclick="dsTxFilter('${x[0]}')">${x[1]}</button>`; }).join('')}</div>
       <div id="dwAct">${actHTML()}</div></div>
     <button class="row" onclick="clearStuckPayment()"><div class="ic">🧹</div><div class="tx"><b>Fix “Pending payment found”</b><small>Clears an unfinished payment so you can pay again</small></div><span class="chev">›</span></button>
-    <div class="note">🔒 <b>Your Pi stays in your Pi Wallet.</b> DigitalSaudi never sees your balance, holds your Pi or asks for your passphrase. Transfers always happen in your own Pi Wallet, and only you approve them.</div>`, { id: 'piWallet', share: false });
+    <div class="note">🔒 <b>Only you approve your payments.</b> DigitalSaudi never sees your balance or asks for your passphrase. Every payment is approved by you in Pi’s own pop-up, and Pi you send in the app is passed on to the recipient automatically on the Pi blockchain.</div>`, { id: 'piWallet', share: false });
     dsConv('pi');
     var iv = setInterval(function () {
       if (document.hidden) return;
