@@ -77,3 +77,27 @@ footer.legal{font-weight:600;color:var(--text-2)}
 #hq-bar #hq-rep.on{background:#E6BD5C;color:#13261E}
 .hq-now{flex:1;min-width:0}.hq-now b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hq-now small{display:block;font-size:11.5px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html.hq-playing #pBody{padding-bottom:6.5rem}
+
+/* ── v3 colour: clear Saudi green + gold, solid coloured icons everywhere (light and dark) ── */
+[data-theme="light"]{--accent:#08804F;--accent-dark:#05603A;--gold:#A87B0C;--bg-base:#EEF3F0}
+html:not([data-theme="light"]){--accent:#19C48A;--accent-dark:#0E9F6F;--gold:#F0C14B}
+/* every list icon becomes a solid colour badge, like Quick actions */
+.row .ic,.card .ic,.mini .ic{background:var(--ic,var(--accent))!important;color:#fff!important;box-shadow:0 8px 16px -10px color-mix(in srgb,var(--ic,var(--accent)) 90%,transparent)}
+html:not([data-theme="light"]) .row .ic,html:not([data-theme="light"]) .card .ic,html:not([data-theme="light"]) .mini .ic{color:#07130E!important}
+.row .chev{color:var(--accent);font-weight:800}
+.row,.mini{border-left:4px solid var(--ic,var(--accent))!important}
+/* section titles with a green and gold marker */
+h2.sec{position:relative;padding-left:14px}
+h2.sec::before{content:"";position:absolute;left:0;top:50%;width:5px;height:1.05em;transform:translateY(-50%);border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--gold))}
+/* header: thin Saudi green and gold line */
+header{border-bottom:0!important;background-image:linear-gradient(90deg,var(--accent),var(--gold))!important;background-size:100% 3px!important;background-repeat:no-repeat!important;background-position:bottom!important}
+/* buttons and active states */
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-dark))!important;color:#fff!important}
+.chip.on,.seg button.on{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+#nav button.active{color:var(--accent)!important}
+h2.sec button{color:var(--accent)!important}
+/* All services tiles: a little more colour */
+.ds-dir-t{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 24%,var(--bg-card)) 0%,var(--bg-card) 80%)}
+/* tidy: no empty gap when the price chart has no data yet; less space at the top of Explore */
+.hpx-spark.empty{display:none!important}
+#tab-explore>h2.sec:first-child{margin-top:8px}
