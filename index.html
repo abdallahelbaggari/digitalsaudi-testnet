@@ -1332,7 +1332,6 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
         </div>
         <h2 class="sec">Saudi Riyal rates <button onclick="openItem('converter')">Convert ›</button></h2>
         <div class="card" id="rateList"><div class="skeleton" style="margin:8px 0"></div><div class="skeleton" style="margin:8px 0"></div><div class="skeleton" style="margin:8px 0"></div></div>
-        <p class="small" style="text-align:center;margin-top:10px">Not financial advice · <a class="ds-credit" href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates By Exchange Rate API</a></p>
       </div>
 
       <div id="live-events" class="lv" style="display:none">
@@ -6768,7 +6767,6 @@ PANELS.converter = function(){
         <div><span>Rate used</span><b>Mid-market</b></div>
         <div><span>Rates updated</span><b id="wxUpd">—</b></div>
       </div>
-      <div class="note">Banks and exchange shops add their own margin to this rate. Compare a few before you exchange, and ask the total you'll receive.</div><p class="ds-credit-p"><a class="ds-credit" href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates By Exchange Rate API</a></p>
     </div>`, { id:'converter' });
   ensureRates().then(wxCalc); wxCalc();
   setTimeout(function(){ const i = $('wxAmt'); if(i){ i.focus(); i.select(); } }, 350);
