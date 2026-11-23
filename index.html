@@ -3810,7 +3810,10 @@ function buyPremium(tier){
 /* ================= PI AUTH ================= */
 /* Pi.init must run only once per page: calling it again before every sign-in can leave Pi.authenticate waiting. */
 let piInited = false, authInFlight = null, authStartedAt = 0;
-function initPi(){ if(!piInited){ Pi.init({ version:'2.0', sandbox:false }); piInited = true; } }
+const PI_SANDBOX = (function(){ try{ const r = document.referrer || '', a = location.ancestorOrigins ? [].slice.call(location.ancestorOrigins).join(' ') : ''; return /sandbox\.minepi\.com/.test(r + ' ' + a); }catch(e){ return false; } })();
+function initPi(){ if(!piInited && typeof Pi !== 'undefined'){ try{ Pi.init({ version:'2.0', sandbox:PI_SANDBOX }); piInited = true; }catch(e){ log('Pi.init failed', e); } } }
+/* Start the Pi SDK as soon as the page opens (like FinPi), so Pi is ready before anyone taps Sign in. */
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPi, { once:true }); else initPi();
 function onPiAuth(auth){
   piUser = auth.user; piUser.accessToken = auth.accessToken;
   log('✅ Authenticated:', piUser.username);
@@ -3826,7 +3829,7 @@ function onPiAuth(auth){
 let authRetried = false;
 function piAuth(){
   initPi();
-  if(!authInFlight || Date.now() - authStartedAt >= 10000){
+  if(!authInFlight || Date.now() - authStartedAt >= 20000){
     log('Sign-in started');
     authStartedAt = Date.now();
     const attempt = Pi.authenticate(['username','payments'], onIncompletePaymentFound).then(function(auth){
@@ -3840,9 +3843,8 @@ function piAuth(){
       return false;
     });
     authInFlight = attempt;
-    // If the Pi Browser was not ready yet, its first request is never answered (Pi gives up only after 2 minutes).
-    // Ask Pi once more after 12 s; whichever answer comes first signs the user in.
-    setTimeout(function(){ if(!piUser && authInFlight === attempt && !authRetried){ authRetried = true; log('Pi did not answer, asking again'); authStartedAt = 0; piAuth(); } }, 12000);
+    // Pi is started when the page opens, so one request is enough. A second request while the first is still
+    // waiting can make the Pi Browser hang, so a new one is only sent if the user taps Sign in again after 20 s.
   }
   return authInFlight;
 }
@@ -3855,7 +3857,7 @@ function piLogin(){
   // A slow answer from Pi is not a failure: keep waiting and sign in as soon as Pi replies.
   const slow = setTimeout(function(){
     if(authInFlight === current && !piUser){ resetBtn(); toast('Still connecting to Pi… you will be signed in when Pi answers. If nothing happens, tap Sign in again.'); }
-  }, 20000);
+  }, 15000);
   current.then(function(){ clearTimeout(slow); resetBtn(); });
 }
 function dsWaitToken(ms){
@@ -8632,7 +8634,7 @@ const DS_SURAHS = 'Al-Faatiha|The Opening|7|M|الفاتحة;Al-Baqara|The Cow|2
     if(ov && ov.classList.contains('open')) return;
     tried = true;
     const b = $('loginBtn'); if(b) b.innerHTML = '<span>π</span> ' + esc(t('Continue as')) + ' @' + esc(last);
-    const go = function(){ setTimeout(function(){ if(!(typeof entered !== 'undefined' && entered)) piLogin(); }, 1200); };
+    const go = function(){ setTimeout(function(){ if(!(typeof entered !== 'undefined' && entered)) piLogin(); }, 600); };
     if(document.readyState === 'complete') go(); else window.addEventListener('load', go, { once:true });
   }
   const iv = setInterval(function(){ check(); if(tried || (typeof entered !== 'undefined' && entered)) clearInterval(iv); }, 500);
