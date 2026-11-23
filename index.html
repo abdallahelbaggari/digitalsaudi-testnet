@@ -6156,7 +6156,7 @@ let LANG = LANGS[store.get('lang', '')] ? store.get('lang', '') : detectLang();
 let AUTO_TR = store.get('tr_' + LANG, {});
 const TR_FAILED = new Set(), TR_QUEUE = new Set();
 const TR_ORIG = new WeakMap(), TR_LAST = new WeakMap(), TR_ATTR = new WeakMap();
-const TR_SKIP = 'script,style,textarea,code,pre,.ar,.notr,[translate="no"],#newsList,#homeNews,.msg,#avatar,#bigAv,.qr,.leaflet-container,#trBadge';
+const TR_SKIP = 'script,style,textarea,code,pre,.ar,.notr,[translate="no"],#newsList,#homeNews,.msg,#avatar,#bigAv,.qr,.leaflet-container,#trBadge,.hq-ay-ar,.hq-ay-en,.hq-head-ar,.hq-bism,.hq-ar,.hq-rec select,.hq-now,#hh-list small';
 const TR_SPLIT = /^([\s\p{Extended_Pictographic}️‍⃣•·›‹←→＋+✓✔★☆▸▾▲▼|π]*)(\S[\s\S]*?)([\s›‹→←:*·\p{Extended_Pictographic}\uFE0F\u200D]*)$/u;
 let trEverChanged = LANG !== 'en';
 
@@ -10262,7 +10262,7 @@ if(DS_TESTNET){
 <script src="/ds-receipt.js?v=2"></script>
 <script src="/ds-wallet.js?v=7"></script>
 <script src="/ds-transfer.js?v=2"></script>
-<link rel="stylesheet" href="/ds-pro.css?v=3">
+<link rel="stylesheet" href="/ds-pro.css?v=6">
 <script src="/ds-quran.js?v=1"></script>
 <script src="/ds-pro.js?v=3"></script>
 </body>

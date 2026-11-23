@@ -101,3 +101,11 @@ h2.sec button{color:var(--accent)!important}
 /* tidy: no empty gap when the price chart has no data yet; less space at the top of Explore */
 .hpx-spark.empty{display:none!important}
 #tab-explore>h2.sec:first-child{margin-top:8px}
+
+/* ── Arabic / Urdu (right-to-left): keep English Quran and Hadith meanings and the wallet card left-to-right ── */
+[dir=rtl] .hq-ay-en,[dir=rtl] #hh-list small{direction:ltr;text-align:left;unicode-bidi:isolate}
+[dir=rtl] .pcard{direction:ltr}
+.pcard .pc-brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.pcard .pc-top{min-width:0}
+[dir=rtl] .pcard .pc-chip{left:auto;right:20px}
+[dir=rtl] .pcard .pc-bottom div:last-child{text-align:right}
