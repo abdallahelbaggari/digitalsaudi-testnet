@@ -3834,27 +3834,33 @@ function onPiAuth(auth){
   syncPremium();
   if(pendingAction){ const a = pendingAction; pendingAction = null; a(); }
 }
+/* One shared Pi sign-in. Two Pi.authenticate calls at the same time (sign-in button, "Fix pending payment",
+   a payment) make the Pi Browser hang or fail, so every caller waits for the same request. */
+function piAuth(){
+  initPi();
+  if(!authInFlight || Date.now() - authStartedAt >= 30000){
+    log('Sign-in started');
+    authStartedAt = Date.now();
+    const attempt = Pi.authenticate(['username','payments'], onIncompletePaymentFound).then(function(auth){
+      if(authInFlight === attempt) authInFlight = null;
+      if(!piUser) onPiAuth(auth); else piUser.accessToken = auth.accessToken;
+      return true;
+    }, function(err){
+      if(authInFlight === attempt) authInFlight = null;
+      log('❌ Sign-in failed:', err && err.message ? err.message : err);
+      if(!piUser) toast('Sign-in failed. Please try again in the Pi Browser.');
+      return false;
+    });
+    authInFlight = attempt;
+  }
+  return authInFlight;
+}
 function piLogin(){
   if(typeof Pi === 'undefined'){ log('Pi SDK missing: open from the Pi Browser'); toast('Please open DigitalSaudi in the Pi Browser'); return; }
   const btn = $('loginBtn');
   const resetBtn = function(){ if(btn){ btn.disabled = false; btn.innerHTML = '<span>π</span> Sign in with Pi'; } };
   if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Connecting…'; }
-  initPi();
-  // Reuse a sign-in that is still running instead of starting a second one; start fresh only if it has hung for 20 s or more.
-  if(!authInFlight || Date.now() - authStartedAt >= 20000){
-    log('Sign-in started');
-    authStartedAt = Date.now();
-    const attempt = Pi.authenticate(['username','payments'], onIncompletePaymentFound).then(function(auth){
-      if(authInFlight === attempt) authInFlight = null;
-      if(!piUser) onPiAuth(auth);
-    }, function(err){
-      if(authInFlight === attempt) authInFlight = null;
-      log('❌ Sign-in failed:', err && err.message ? err.message : err);
-      if(!piUser) toast('Sign-in failed. Please try again in the Pi Browser.');
-    });
-    authInFlight = attempt;
-  }
-  const current = authInFlight;
+  const current = piAuth();
   // A slow answer from Pi is not a failure: keep waiting and sign in as soon as Pi replies.
   const slow = setTimeout(function(){
     if(authInFlight === current && !piUser){ resetBtn(); toast('Still connecting to Pi… you will be signed in when Pi answers. If nothing happens, tap Sign in again.'); }
@@ -3868,7 +3874,7 @@ function dsWaitToken(ms){
   });
 }
 function onIncompletePaymentFound(payment){
-  log('incomplete payment', payment);
+  log('incomplete payment', payment); window.__dsFoundIncomplete = true;
   if(!payment || !payment.identifier) return;
   const txid = payment.transaction && payment.transaction.txid;
   const info = { id:payment.identifier, amount:payment.amount, memo:payment.memo || 'Earlier payment', txid:txid || '', at:Date.now(), state:'working' };
@@ -3907,16 +3913,19 @@ function clearStuckPayment(){
   if(typeof Pi === 'undefined') return toast('Open DigitalSaudi in the Pi Browser');
   initPi();
   showPanel('Unfinished payment', '<div class="lock-wrap"><div class="big">⏳</div><h3>Checking with Pi…</h3></div>', { id:'stuckPay', share:false });
-  let found = false;
-  Pi.authenticate(['username','payments'], function(p){ found = true; onIncompletePaymentFound(p); })
-    .then(function(auth){ piUser = auth.user; piUser.accessToken = auth.accessToken; if(!found){ store.set('stuckPayment', null); showStuckPayment(); } })
-    .catch(function(){ toast('Sign-in failed — open the app from the Pi Browser app link'); });
+  window.__dsFoundIncomplete = false;
+  if(!authInFlight) authStartedAt = 0; // ask Pi again so it reports any unfinished payment
+  piAuth().then(function(ok){
+    if(!ok) return toast('Sign-in failed — open the app from the Pi Browser app link');
+    if(!window.__dsFoundIncomplete){ store.set('stuckPayment', null); showStuckPayment(); }
+  });
 }
 
 /* ================= PI PAYMENTS (Copa exact pattern) ================= */
 function submitPiPayment(amount, memo, metadata, btn){
   if(typeof Pi === 'undefined'){ toast('Payments work only in the Pi Browser'); return; }
   if(!piUser){ pendingAction = function(){ submitPiPayment(amount, memo, metadata, btn); }; piLogin(); return; }
+  if(authInFlight){ toast('Connecting to Pi…'); authInFlight.then(function(){ submitPiPayment(amount, memo, metadata, btn); }); return; }
   if(metadata && metadata.type === 'premium') metadata.uid = piUser.uid;
   initPi();
   const label = btn ? btn.innerHTML : '';
