@@ -27,7 +27,7 @@
 <link rel="dns-prefetch" href="https://open.er-api.com">
 <link rel="dns-prefetch" href="https://api.alquran.cloud">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..700&family=Reem+Kufi:wght@500..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..700&family=Reem+Kufi:wght@500..700&family=Amiri+Quran&family=Amiri:wght@400;700&display=swap">
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <style>
 :root{
@@ -1350,14 +1350,6 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
 
     <!-- ===== EXPLORE ===== -->
     <section class="tab" id="tab-explore">
-      <button class="hero near-hero" onclick="openMap('all', true)">
-        <div class="greet">Map</div>
-        <h3 style="margin-bottom:6px"><svg class="i hero-i"><use href="#i-pin"/></svg>Explore near me</h3>
-        <p class="small" style="color:#BFE6CF;position:relative;z-index:1">Hotels, food, mosques, hospitals, malls and more around you or any Saudi city.</p>
-      </button>
-      <h2 class="sec">Find places</h2>
-      <div class="grid-4" id="placeCats"></div>
-
       <h2 class="sec">Plan</h2>
       <div id="expPlan"></div>
 
@@ -1440,7 +1432,6 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
 
       <h2 class="sec">My stuff</h2>
       <button class="row" onclick="openItem('trips')"><div class="ic">🧳</div><div class="tx"><b>My Saudi Trips</b><small>Plans, countdown, checklists</small></div><span class="chev">›</span></button>
-      <button class="row" onclick="openItem('savedPlaces')"><div class="ic">📍</div><div class="tx"><b>Saved places</b><small>Hotels, restaurants, spots</small></div><span class="chev">›</span></button>
       <button class="row" onclick="openItem('bookmarks')"><div class="ic">🔖</div><div class="tx"><b>Bookmarks</b><small>Saved guides</small></div><span class="chev">›</span></button>
       <button class="row" onclick="openItem('recent')"><div class="ic">🕘</div><div class="tx"><b>Recently viewed</b></div><span class="chev">›</span></button>
       <button class="row" onclick="openItem('ecard')"><div class="ic">🆘</div><div class="tx"><b>Emergency card</b><small>Works offline</small></div><span class="chev">›</span></button>
@@ -1461,7 +1452,7 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
   <nav id="nav">
     <button class="active" data-tab="home" onclick="switchTab('home')"><span class="ni"><svg class="i"><use href="#i-home"/></svg></span>Home</button>
     <button data-tab="live" onclick="switchTab('live')"><span class="ni"><svg class="i"><use href="#i-live"/></svg></span>Live</button>
-    <button class="nav-ai" onclick="openAI()" aria-label="Saudi AI assistant"><span class="ni"><svg class="i"><use href="#i-spark"/></svg></span>Ask AI</button>
+    <button class="nav-ai" onclick="openItem('piWallet')" aria-label="Wallet"><span class="ni"><svg class="i"><use href="#i-wallet"/></svg></span>Wallet</button>
     <button data-tab="explore" onclick="switchTab('explore')"><span class="ni"><svg class="i"><use href="#i-compass"/></svg></span>Explore</button>
     <button data-tab="tools" onclick="switchTab('tools')"><span class="ni"><svg class="i"><use href="#i-tools"/></svg></span>Tools</button>
   </nav>
@@ -2719,7 +2710,7 @@ function renderLists(){
   $('svcLife').innerHTML = LIFE.map(function(v){ return rowHTML(v.id); }).concat(['k-health','s-scams'].map(rowHTML)).join('');
   $('svcGov').innerHTML = GOV.map(function(v){ return rowHTML(v.id); }).join('');
   $('svcGreen').innerHTML = greenRowsHTML();
-  $('deenGrid').innerHTML = ['quran','duas','tasbih','qibla','calendar','zakat','hajj','umrah','madinah','umrahPack'].map(tileHTML).join('');
+  $('deenGrid').innerHTML = ['quran','hadith40','duas','tasbih','qibla','calendar','zakat','hajj','umrah','madinah','umrahPack'].map(tileHTML).join('');
   $('finGrid').innerHTML = ['converter','vat','split','salary','gratuity','zakat','piWallet'].map(tileHTML).join('');
   $('toolGrid').innerHTML = ['transport','units','phrases','worldclock','train','travelPlan','arrival'].map(tileHTML).join('');
   $('safetyRows').innerHTML = ['safety','whatToDo','emergency'].map(rowHTML).join('');
@@ -2727,7 +2718,7 @@ function renderLists(){
   $('trvTips').innerHTML = ['etiquette','weather','about'].map(rowHTML).join('');
   $('trvCities').innerHTML = CITIES.map(function(c, i){ return cardHTML(c.id, i); }).join('');
   if($('placeCats')) $('placeCats').innerHTML = PLACE_CATS.filter(function(c){ return c.id !== 'all'; }).map(function(c, i){ return `<button class="tile" style="animation-delay:${i*0.02}s" onclick="openMap('${c.id}')"><div class="ic">${c.ic}</div><span>${c.t}</span></button>`; }).join('');
-  if($('expPlan')) $('expPlan').innerHTML = ['trips','hotels','food','transport'].map(rowHTML).join('');
+  if($('expPlan')) $('expPlan').innerHTML = ['trips','transport'].map(rowHTML).join('');
   if($('expList')) $('expList').innerHTML = EXPERIENCES.map(function(x){ return x.img ? `<button class="xp xp-photo" style="background-image:linear-gradient(180deg,rgba(6,20,14,0) 35%,rgba(6,20,14,.78) 100%),url(${x.img});background-color:#0E3B26" onclick="openItem('${x.id}')"><b>${x.t}</b><small>${x.s}</small></button>` : `<button class="xp" style="background:${x.bg}" onclick="openItem('${x.id}')"><span class="e">${x.ic}</span><b>${x.t}</b><small>${x.s}</small></button>`; }).join('');
   if($('expBiz')) $('expBiz').innerHTML = ['directory','piHub','addBusiness'].map(rowHTML).join('');
   if($('knowGrid')) $('knowGrid').innerHTML = KNOW.map(function(k, i){ return cardHTML(k.id, i); }).join('') + cardHTML('knowQuiz', KNOW.length);
@@ -5233,10 +5224,10 @@ Object.assign(PANELS, {
   career:careerPanel, cvBuilder:cvBuilderPanel, salary:salaryPanel, gratuity:gratuityPanel, skills:skillsPanel, safety:safetyPanel, whatToDo:whatToDoPanel,
   inbox:inboxPanel, notifSettings:notifSettingsPanel, savedPlaces:savedPlacesPanel, knowQuiz:quizPanel, ai:function(){ openAI(); }
 });
-PERSONA_QA.pilgrim = ['umrah','duas','quran','qibla','trips','hotels'];
-PERSONA_QA.visitor = ['nearMe','trips','hotels','food','converter','phrases'];
+PERSONA_QA.pilgrim = ['umrah','duas','quran','qibla','trips','hadith40'];
+PERSONA_QA.visitor = ['piWallet','trips','quran','hadith40','converter','phrases'];
 PERSONA_QA.worker = ['career','visas','reminders','salary','gratuity','eservices'];
-PERSONA_QA.resident = ['nearMe','directory','energyCalc','reminders','events','safety'];
+PERSONA_QA.resident = ['piWallet','directory','energyCalc','reminders','events','safety'];
 PERSONA_FOR.pilgrim = ['hajj','madinah','umrahPack','train','whatToDo'];
 PERSONA_FOR.visitor = ['x-alula','x-desert','k-food','transport','s-tourist'];
 PERSONA_FOR.worker = ['cvBuilder','c-interview','v-work','g-qiwa','l-money'];
@@ -10271,7 +10262,8 @@ if(DS_TESTNET){
 <script src="/ds-receipt.js?v=2"></script>
 <script src="/ds-wallet.js?v=7"></script>
 <script src="/ds-transfer.js?v=2"></script>
-<link rel="stylesheet" href="/ds-pro.css?v=1">
-<script src="/ds-pro.js?v=1"></script>
+<link rel="stylesheet" href="/ds-pro.css?v=2">
+<script src="/ds-quran.js?v=1"></script>
+<script src="/ds-pro.js?v=2"></script>
 </body>
 </html>
