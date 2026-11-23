@@ -23,7 +23,10 @@
   function loadList() {
     if (S.list) return Promise.resolve(S.list);
     var c = get('qlist', null); if (c) { S.list = c; return Promise.resolve(c); }
-    return fetch('/quran?list=1').then(function (r) { return r.json(); }).then(function (d) { if (!d.ok) throw 0; S.list = d.surahs; put('qlist', d.surahs); return d.surahs; });
+    var ok = function (d) { if (!d || !d.ok || !d.surahs) throw 0; S.list = d.surahs; put('qlist', d.surahs); return d.surahs; };
+    // the surah list ships with the app (instant); the server is only a backup
+    return fetch('/ds-quran-list.json').then(function (r) { return r.json(); }).then(ok)
+      .catch(function () { return fetch('/quran?list=1').then(function (r) { return r.json(); }).then(ok); });
   }
   function loadSurah(n) {
     var cache = get('qs_' + n, null); if (cache) return Promise.resolve(cache);
@@ -195,4 +198,7 @@
     } catch (e) {}
   }
   wire();
+  // get the Quran list, the 40 Hadith and Al-Faatiha ready in the background, so they open instantly
+  function warm() { try { loadList().catch(function () {}); loadH().catch(function () {}); setTimeout(function () { loadSurah(1).catch(function () {}); }, 1500); } catch (e) {} }
+  if (document.readyState === 'complete') setTimeout(warm, 2500); else window.addEventListener('load', function () { setTimeout(warm, 2500); });
 })();

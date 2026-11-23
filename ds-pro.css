@@ -109,3 +109,11 @@ h2.sec button{color:var(--accent)!important}
 .pcard .pc-top{min-width:0}
 [dir=rtl] .pcard .pc-chip{left:auto;right:20px}
 [dir=rtl] .pcard .pc-bottom div:last-child{text-align:right}
+
+/* ── consistency: one page background everywhere; Services category bar no longer shows content through it ── */
+[data-theme="light"] body{background:var(--bg-base)!important}
+.svc-chips{background:var(--bg-base)!important;box-shadow:0 -40px 0 0 var(--bg-base),0 10px 14px -14px rgba(0,0,0,.35)}
+/* one look for every result box (salary, zakat, Qibla, calculators) and the Tasbih counter: Saudi green, like the Home card */
+.result{background:linear-gradient(150deg,#0C8A55 0%,#0A7A4B 55%,#075E3A 100%)!important;color:#fff!important;border:0!important;box-shadow:0 14px 28px -18px rgba(7,94,58,.75)}
+.result small{color:#D5EEE2!important}
+.tasbih{background:radial-gradient(circle at 35% 30%,#14A36A,#0A7A4B 55%,#064A2E)!important}
