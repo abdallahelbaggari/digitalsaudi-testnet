@@ -117,12 +117,12 @@
   function toJpg(cv) { return new Promise(function (ok) { cv.toBlob(ok, 'image/jpeg', 0.92); }); }
   function share(cv, fname, text) { toJpg(cv).then(function (b) { shareImage(b, fname.replace(/\.png$/, '.jpg'), 'image/jpeg', 'DigitalSaudi receipt', String(text || '').split('\n').slice(0, 2).join(' · ')); }); }
   function sheet(spec, fname, text, title) {
-    T('Preparing receipt…');
+    var isInv = /^Invoice/.test(spec.title || ''); T(isInv ? 'Preparing invoice…' : 'Preparing receipt…');
     fname = fname.replace(/\.png$/, '.jpg');
-    var short = 'DigitalSaudi receipt · ' + (spec.title || 'Receipt') + ' · ' + spec.amount + ' π';
+    var short = (isInv ? 'DigitalSaudi · ' : 'DigitalSaudi receipt · ') + (spec.title || 'Receipt') + ' · ' + spec.amount + ' π';
     return canvas(spec).then(function (cv) {
       var url = cv.toDataURL('image/jpeg', 0.92), jpg = toJpg(cv);
-      showPanel(title || 'Receipt', '<img src="' + url + '" alt="Receipt" class="ds-rimg">' +
+      showPanel(title || 'Receipt', '<img src="' + url + '" alt="' + (isInv ? 'Invoice' : 'Receipt') + '" class="ds-rimg">' +
         '<div class="ds-ract"><button class="btn btn-primary" id="dsRcShare">📤 Share image</button><button class="btn btn-ghost" id="dsRcSave">⬇️ Save to gallery</button></div>' +
         '<button type="button" class="ds-rlink" id="dsRcLink">🔗 Share as a link</button>', { id: 'receipt', share: false });
       var g = function (id, fn) { var e = document.getElementById(id); if (e) e.onclick = function () { jpg.then(fn); }; };

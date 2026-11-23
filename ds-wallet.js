@@ -50,7 +50,8 @@
   /* ── DigitalSaudi Pay ── */
   function enc(o) { return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
   function newRef() { var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', b = new Uint8Array(6), s = 'DS-'; try { crypto.getRandomValues(b); } catch (e) { for (var j = 0; j < 6; j++) b[j] = Math.random() * 256; } for (var i = 0; i < 6; i++) s += A[b[i] % A.length]; return s; }
-  function link(s) { return location.origin + '/invoice.html#' + enc({ v: 1, t: s.t, a: s.a, i: s.i, n: s.n, u: s.u, r: s.r, k: TESTNET ? 'test' : 'main', d: s.d }); }
+  function link(s) { var o = { v: 1, t: s.t, a: s.a, i: s.i, n: s.n, u: s.u, r: s.r, k: TESTNET ? 'test' : 'main', d: s.d }; ['c', 'no', 'due', 'x', 'l'].forEach(function (k) { if (s[k]) o[k] = s[k]; }); return location.origin + '/invoice.html#' + enc(o); }
+  window.dsPayLink = link; window.dsNewRef = newRef;
   var back = '<button class="btn btn-ghost btn-sm dw-back" onclick="openItem(\'piWallet\')">‹ Wallet</button>';
   window.dsGetPaid = function () {
     showPanel('Get paid in Pi', back +
@@ -75,9 +76,10 @@
   };
   window.dsShowReq = function (i) {
     var s = store.get('sales', [])[i]; if (!s) return;
-    var url = link(s), text = 'Payment request from ' + (s.n || 'me') + ': ' + s.a + ' π for ' + s.i + '. Pay securely with DigitalSaudi Pay:\n' + url;
-    showPanel(s.paid ? 'Payment received' : 'Payment request ready', back +
+    var url = link(s), text = (s.no ? 'Invoice ' + s.no + ' from ' + (s.n || 'me') + ': ' + s.a + ' π' + (s.due ? ', due ' + s.due : '') : 'Payment request from ' + (s.n || 'me') + ': ' + s.a + ' π for ' + s.i) + '. Pay securely with DigitalSaudi Pay:\n' + url;
+    showPanel(s.paid ? (s.no ? 'Invoice paid' : 'Payment received') : (s.no ? 'Invoice ' + s.no : 'Payment request ready'), back +
       '<div class="dw-req"><div class="dw-req-a">' + s.a + ' π</div><div class="dw-req-c">' + esc(conv(s.a)) + '</div><div class="dw-req-i">' + esc(s.i) + ' · <span class="notr">' + s.r + '</span></div></div>' +
+      (s.no && window.dsInvoiceInfo ? dsInvoiceInfo(s, i) : '') +
       (s.paid ? '<div class="p-actions" style="justify-content:center"><button class="btn btn-primary btn-sm" onclick="dsP2PReceipt(\'' + s.paid + '\')">🧾 View receipt</button></div>' :
       '<p class="small" style="text-align:center;margin:10px 0">Send this link to your buyer. When they pay, DigitalSaudi finds the payment automatically and adds your sale receipt to the wallet.</p>' +
       '<button class="btn btn-primary" style="width:100%" id="rqSh">📤 Share with buyer</button>' +
@@ -136,7 +138,7 @@
   function txRow(r) {
     var parts = String(r.sub || '').split(' · '), st = parts.length > 1 ? parts.pop() : '', what = parts.join(' · ');
     st = st ? st.charAt(0).toUpperCase() + st.slice(1) : '';
-    return '<button class="dw-li" onclick="' + r.act + '"><span class="dw-lic ' + r.dir + '">' + (r.dir === 'in' ? '↙' : r.ic === '⭐' ? '★' : '↗') + '</span><span class="dw-lit"><b>' + esc(r.title) + '</b><small>' + esc((what ? what + ' · ' : '') + new Date(r.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) + '</small></span><span class="dw-lia ' + r.dir + '"><b>' + (r.dir === 'in' ? '+' : '−') + fmt(r.amt, 7) + ' π</b><small>' + esc(st) + '</small></span></button>';
+    return '<button class="dw-li" onclick="' + r.act + '"><span class="dw-lic ' + r.dir + '">' + (r.dir === 'in' ? '↙' : r.ic === '⭐' ? '★' : '↗') + '</span><span class="dw-lit"><b>' + esc(r.title) + '</b><small>' + esc((what ? what + ' · ' : '') + new Date(r.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) + '</small></span><span class="dw-lia ' + r.dir + '"><b>' + (r.dir === 'in' ? '+' : '−') + fmt(r.amt, 7) + ' π</b><small class="dw-pill ' + (/complet|verified|paid/i.test(st) ? 'ok' : /pend|wait|process/i.test(st) ? 'wait' : /cancel|fail|refund/i.test(st) ? 'bad' : '') + '">' + esc(st) + '</small></span></button>';
   }
   var sortOld = false, extra = [], hMore = false;
   function actHTML() {
@@ -151,6 +153,7 @@
     R.slice(0, 600).forEach(function (r) { var d = new Date(r.ts).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); if (d !== day) { if (day) out += '</div>'; out += '<div class="dw-day">' + d + '</div><div class="dw-list">'; day = d; } out += txRow(r); });
     return bar + out + '</div>' + tools;
   }
+  window.dsWalletRows = function () { return rows(); };
   window.dsTxSort = function () { sortOld = !sortOld; var e = $('dwAct'); if (e) e.innerHTML = actHTML(); };
 
   /* ── full history, backed up on the server for this Pi account (never lost, restored on any phone) ── */
@@ -316,35 +319,36 @@
     var hr = new Date().getHours(), greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening', nR = rows().length;
     showAll = false; filter = 'all';
     showPanel('DigitalSaudi Wallet', `
-    <div class="dw-hello"><h2>${greet}${me() ? ', @' + esc(me()) : ''}</h2><p>${me() ? 'Here is your Pi today.' : 'Sign in with Pi to send and receive Pi.'}</p></div>
+    <div class="dw-hello"><h2>${greet}${me() ? ', @' + esc(me()) : ''}</h2><p>${me() ? 'Your Pi account at a glance.' : 'Sign in with Pi to send, receive and get paid in Pi.'}</p></div>
     <div class="pcard-wrap"><div class="pcard" id="pcard">
       <div class="pc-top"><img src="${logo}" alt="" class="pc-logo"><span class="pc-brand">DigitalSaudi <b>Wallet</b></span><span class="pc-net">${TESTNET ? 'Testnet' : 'Mainnet'}</span></div>
       <div class="pc-chip" aria-hidden="true"></div>
       <div class="pc-rate dw-rate notr" id="dwRate">${rateHTML()}</div>
       <div class="pc-bottom"><div><small>Account</small><b class="notr"><span style="overflow:hidden;text-overflow:ellipsis">${esc(fullName())}</span><button class="dw-ed" onclick="event.stopPropagation();dsEditName()" aria-label="Edit name">✎</button></b></div><div><small>Network</small><b class="notr">${TESTNET ? 'Pi Testnet' : 'Pi Mainnet'}</b></div></div>
     </div></div>
+    <div class="dw-trust"><span>🔒 Non-custodial</span><span>⛓ Verified on the Pi blockchain</span><span>✔ You approve every payment</span></div>
     <div class="dw-qa">
       <button onclick="walletTab('send')"><i>↗</i>Send</button>
       <button onclick="dsGetPaid()"><i class="g">↙</i>Request</button>
       <button onclick="dsPay()"><i class="n">▦</i>Pay</button>
-      <button onclick="openItem('merchantQR')"><i class="a">🏪</i>Poster</button>
+      <button onclick="dsBusiness()"><i class="b">▤</i>Business</button>
     </div>
     <div id="wBody"></div>
-    <div class="dw-sh"><h3>Overview</h3></div>
+    <div class="dw-sh"><h3>Account overview</h3></div>
     <div class="card dw-sec"><div class="dw-h"><div><b>This month</b><div class="small" style="opacity:.7">${new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}</div></div><button class="dw-link" onclick="dsTxAll(true);document.getElementById('dwActH').scrollIntoView({behavior:'smooth',block:'start'})">Activity ›</button></div>
       <div class="dw-stats"><div><small>Sent</small><b class="notr">${fmt(st.out, 4)} π</b></div><div><small>Received</small><b class="notr pos">${fmt(st.inn, 4)} π</b></div><div><small>Payments</small><b class="notr">${st.n}</b></div></div></div>
-    <div id="dwActH"><div class="dw-sh"><h3>Recent activity</h3>${nR > 0 ? '<button id="dwSeeAll" onclick="dsTxAll(!' + 'document.getElementById(\'dwTabs\').offsetParent)">See all</button>' : ''}</div>
+    <div id="dwActH"><div class="dw-sh"><h3>Transactions</h3>${nR > 0 ? '<button id="dwSeeAll" onclick="dsTxAll(!' + 'document.getElementById(\'dwTabs\').offsetParent)">See all</button>' : ''}</div>
       <div class="dw-tabs" id="dwTabs" style="display:none">${[['all', 'All'], ['out', 'Sent'], ['in', 'Received']].map(function (x) { return `<button data-f="${x[0]}" class="${filter === x[0] ? 'on' : ''}" onclick="dsTxFilter('${x[0]}')">${x[1]}</button>`; }).join('')}</div>
       <div id="dwAct">${actHTML()}</div></div>
-    <div class="dw-sh"><h3>Get paid · DigitalSaudi Pay</h3>${openN ? '<button onclick="dsCheckSales(true)">Check now</button>' : ''}</div>
+    <div class="dw-sh"><h3>Invoices & payment requests</h3>${openN ? '<button onclick="dsCheckSales(true)">Check now</button>' : ''}</div>
     <div class="card dw-sec">
       ${sales.length ? sales.slice(0, 6).map(function (s, i) { return `<button class="dw-sale" onclick="dsShowReq(${i})"><span class="dw-si ${s.paid ? 'ok' : ''}">${s.paid ? '✓' : '⏳'}</span><span class="dw-txt"><b>${esc(s.i)}</b><small class="notr">${s.r} · ${new Date(s.d).toLocaleDateString([], { day: 'numeric', month: 'short' })} · ${s.paid ? 'Paid' : 'Waiting for payment'}</small></span><span class="dw-txa ${s.paid ? 'in' : ''}">${s.a} π<small>${s.paid ? 'Receipt ›' : 'Share ›'}</small></span></button>`; }).join('') :
       '<div class="dw-how"><div><i>1</i>Create a request with the amount and item</div><div><i>2</i>The buyer pays from their Pi Wallet</div><div><i>3</i>Both get a receipt verified on the Pi blockchain</div></div>'}
-      <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="dsGetPaid()">＋ Create payment request</button></div>
+      <div class="dw-two" style="margin-top:12px"><button class="btn btn-primary" onclick="dsInvoice()">＋ New invoice</button><button class="btn btn-ghost" onclick="dsGetPaid()">Quick request</button></div></div>
     <div class="dw-sh"><h3>Converter</h3><button onclick="openItem('priceAlerts')">${esc(hc)} ▾</button></div>
     <div class="card dw-sec"><div class="dw-conv3"><label><span>π</span><input id="dwPi" type="number" inputmode="decimal" value="1" oninput="dsConv('pi')"></label><label><span>SAR</span><input id="dwSar" type="number" inputmode="decimal" oninput="dsConv('sar')"></label>${hc !== 'SAR' ? `<label><span>${esc(hc)}</span><input id="dwLoc" type="number" inputmode="decimal" oninput="dsConv('loc')"></label>` : ''}</div></div>
-    <button class="row" onclick="clearStuckPayment()"><div class="ic">🧹</div><div class="tx"><b>Fix “Pending payment found”</b><small>Clears an unfinished payment so you can pay again</small></div><span class="chev">›</span></button>
-    <div class="note">🔒 <b>Only you approve your payments.</b> DigitalSaudi never sees your balance or asks for your passphrase. Every payment is approved by you in Pi’s own pop-up, and Pi you send in the app is passed on to the recipient automatically on the Pi blockchain.</div>`, { id: 'piWallet', share: false });
+    <button class="row" onclick="clearStuckPayment()"><div class="ic">⟳</div><div class="tx"><b>Resolve a pending payment</b><small>Completes or clears an unfinished payment so you can pay again</small></div><span class="chev">›</span></button>
+    <div class="dw-secure"><b>🔒 Safe payments on the Pi blockchain</b><span>Every payment is approved by you in Pi’s own secure pop-up. DigitalSaudi never holds your Pi, never sees your balance and never asks for your passphrase. Every transaction has a blockchain ID you can check.</span><button onclick="dsFxSettings()">🔔 Sounds & vibration</button></div>`, { id: 'piWallet', share: false });
     dsConv('pi');
     var iv = setInterval(function () {
       if (document.hidden) return;

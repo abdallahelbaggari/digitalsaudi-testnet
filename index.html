@@ -966,7 +966,7 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
 #splash .sp-legal a,footer.legal a{color:#D9B45B;text-decoration:none;font-weight:600}
 @media (max-width:350px){.hp-st{padding:9px 9px}.hp-st b{font-size:14px}}
 </style>
-<link rel="stylesheet" href="/ds-wallet.css?v=6">
+<link rel="stylesheet" href="/ds-wallet.css?v=7">
 </head>
 <body>
 
@@ -9480,7 +9480,7 @@ function dsBadgesAll(){ const g = $('badgeGrid'); if(!g) return; const all = g.c
     take('deenGrid', 'islamic'); take('deenEvents', 'islamic');
     // Pi & money
     const piRows = document.createElement('div'); piRows.className = 'ds-rows';
-    piRows.innerHTML = [['piWallet', 'wallet'], ['piHub', 'pi'], ['merchantQR', 'image'], ['directory', 'store']].map(function(r){ const m = META[r[0]]; return m ? `<button class="row" onclick="openItem('${r[0]}')"><div class="ic">${ico(r[1])}</div><div class="tx"><b>${esc(t(m.t))}</b><small>${esc(t(m.s || ''))}</small></div><span class="chev">›</span></button>` : ''; }).join('');
+    piRows.innerHTML = [['piWallet', 'wallet'], ['business', 'briefcase'], ['piHub', 'pi'], ['merchantQR', 'image'], ['directory', 'store']].map(function(r){ const m = META[r[0]]; return m ? `<button class="row" onclick="openItem('${r[0]}')"><div class="ic">${ico(r[1])}</div><div class="tx"><b>${esc(t(m.t))}</b><small>${esc(t(m.s || ''))}</small></div><span class="chev">›</span></button>` : ''; }).join('');
     panes.money.appendChild(piRows);
     take('finGrid', 'money');
     // Travel & papers
@@ -10257,9 +10257,10 @@ if(DS_TESTNET){
 }
 
 </script>
-<script src="/ds-receipt.js?v=2"></script>
-<script src="/ds-wallet.js?v=7"></script>
+<script src="/ds-receipt.js?v=3"></script>
+<script src="/ds-wallet.js?v=8"></script>
 <script src="/ds-transfer.js?v=2"></script>
+<script src="/ds-business.js?v=1"></script>
 <link rel="stylesheet" href="/ds-pro.css?v=9">
 <script src="/ds-quran.js?v=2"></script>
 <script src="/ds-pro.js?v=3"></script>
