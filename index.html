@@ -3833,9 +3833,10 @@ function onPiAuth(auth){
 }
 /* One shared Pi sign-in. Two Pi.authenticate calls at the same time (sign-in button, "Fix pending payment",
    a payment) make the Pi Browser hang or fail, so every caller waits for the same request. */
+let authRetried = false;
 function piAuth(){
   initPi();
-  if(!authInFlight || Date.now() - authStartedAt >= 30000){
+  if(!authInFlight || Date.now() - authStartedAt >= 10000){
     log('Sign-in started');
     authStartedAt = Date.now();
     const attempt = Pi.authenticate(['username','payments'], onIncompletePaymentFound).then(function(auth){
@@ -3849,6 +3850,9 @@ function piAuth(){
       return false;
     });
     authInFlight = attempt;
+    // If the Pi Browser was not ready yet, its first request is never answered (Pi gives up only after 2 minutes).
+    // Ask Pi once more after 12 s; whichever answer comes first signs the user in.
+    setTimeout(function(){ if(!piUser && authInFlight === attempt && !authRetried){ authRetried = true; log('Pi did not answer, asking again'); authStartedAt = 0; piAuth(); } }, 12000);
   }
   return authInFlight;
 }
@@ -8639,7 +8643,8 @@ const DS_SURAHS = 'Al-Faatiha|The Opening|7|M|الفاتحة;Al-Baqara|The Cow|2
     if(ov && ov.classList.contains('open')) return;
     tried = true;
     const b = $('loginBtn'); if(b) b.innerHTML = '<span>π</span> ' + esc(t('Continue as')) + ' @' + esc(last);
-    setTimeout(function(){ if(!(typeof entered !== 'undefined' && entered)) piLogin(); }, 350);
+    const go = function(){ setTimeout(function(){ if(!(typeof entered !== 'undefined' && entered)) piLogin(); }, 1200); };
+    if(document.readyState === 'complete') go(); else window.addEventListener('load', go, { once:true });
   }
   const iv = setInterval(function(){ check(); if(tried || (typeof entered !== 'undefined' && entered)) clearInterval(iv); }, 500);
   setTimeout(function(){ clearInterval(iv); }, 120000);
