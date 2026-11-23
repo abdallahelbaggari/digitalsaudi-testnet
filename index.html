@@ -1398,7 +1398,6 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
       <div class="sub">Daily life</div>
       <div id="svcLife"></div>
       <div class="sub">Official platforms</div>
-      <div class="note" style="margin-top:0">These are official government services. DigitalSaudi is an independent guide and is not affiliated with them.</div>
       <div id="svcGov"></div>
 
       <h2 class="sec sec-ico"><svg class="i"><use href="#i-coins"/></svg>Finance</h2>
@@ -1418,7 +1417,6 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
 
       <h2 class="sec">Good to know</h2>
       <div id="trvTips"></div>
-      <div class="note">ℹ️ Rules and fees change. Always confirm on the official portal before applying or paying.</div>
     </section>
 
     <!-- ===== PROFILE ===== -->
@@ -1456,7 +1454,7 @@ header.scrolled{box-shadow:0 1px 0 var(--line),0 10px 24px -18px rgba(0,0,0,.6)}
       <button class="row" onclick="openItem('about')"><div class="ic">ℹ️</div><div class="tx"><b>About</b></div><span class="chev">›</span></button>
       <button class="row" onclick="location.href='/privacy.html'"><div class="ic">🔒</div><div class="tx"><b>Privacy policy</b></div><span class="chev">›</span></button>
       <button class="row" onclick="location.href='/terms.html'"><div class="ic">📄</div><div class="tx"><b>Terms of service</b></div><span class="chev">›</span></button>
-      <footer class="legal"><span class="notr" dir="ltr">digitalsaudi.pi · DigitalSaudi v7.2</span><br><span class="notr" dir="ltr">© 2026 DigitalSaudi.</span> <span>All rights reserved.</span><br><span>Independent app, not affiliated with the Government of Saudi Arabia or Pi Network.</span><br><a href="/terms.html">Terms of service</a> · <a href="/privacy.html">Privacy policy</a> · <a href="mailto:support.digitalsaudi.pi@gmail.com" class="notr">support.digitalsaudi.pi@gmail.com</a></footer>
+      <footer class="legal"><span class="notr" dir="ltr">© 2026 DigitalSaudi · digitalsaudi.pi</span><br><a href="/terms.html">Terms of service</a> · <a href="/privacy.html">Privacy policy</a> · <a href="mailto:support.digitalsaudi.pi@gmail.com" class="notr">support.digitalsaudi.pi@gmail.com</a></footer>
     </section>
   </main>
 
@@ -3095,10 +3093,9 @@ const PANELS = {
   },
   feedback: function(){ openFeedback(''); },
   about: function(){
-    showPanel('About DigitalSaudi', `<p>DigitalSaudi is an independent Pi Network app that helps visitors, pilgrims, workers and residents with Saudi Arabia: live news, football scores, the Pi price, visas, e-services, Umrah, Quran and practical tools — in one place.</p>
-      <h4>Independence</h4><p>DigitalSaudi is not affiliated with or endorsed by the Government of Saudi Arabia or any ministry. Always confirm details on official portals.</p>
+    showPanel('About DigitalSaudi', `<p>DigitalSaudi is a Pi Network app that helps visitors, pilgrims, workers and residents with Saudi Arabia: live news, football scores, the Pi price, visas, e-services, Umrah, Quran and practical tools — in one place.</p>
       <h4>Data sources</h4><ul><li>News: BBC, Al Jazeera, Arab News, Saudi Gazette and Cointelegraph feeds — headlines, short summaries and links; articles belong to their publishers</li><li>Football: football-data.org</li><li>Pi price: OKX, Gate.io, Bitget, MEXC or CoinGecko (the source is shown next to the price) · Currency rates: <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates By Exchange Rate API</a></li><li>Weather: <a href="https://www.met.no/en" target="_blank" rel="noopener">MET Norway</a> (CC BY 4.0) · Prayer times: Aladhan (Umm al-Qura)</li><li>Maps &amp; places: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL), Overpass, Photon by komoot</li><li>Quran: alquran.cloud</li><li>AI features: Google Gemini, Cloudflare Workers AI, Anthropic — answers are AI-generated</li><li>Green calculators: SEC tariffs, Climate Transparency, Our World in Data (estimates)</li></ul>
-      <h4>Contact</h4><p><a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p><p class="small"><span class="notr" dir="ltr">© 2026 DigitalSaudi.</span> All rights reserved. The DigitalSaudi name, logo, design and original content are protected by copyright.</p>`, { id:'about' });
+      <h4>Contact</h4><p><a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p><p class="small"><span class="notr" dir="ltr">© 2026 DigitalSaudi</span></p>`, { id:'about' });
   }
 };
 
@@ -7122,7 +7119,7 @@ function sourcesFor(id){
     if(src.length){
       const rv = body.querySelector('.reviewed');
       const note = src.every(function(k){ return k === 'visit'; }) ? 'Opening times and prices change — check the official site before you go.' : 'Rules and fees change — always confirm on the official site before you apply or pay.';
-      const html = `<div class="g-src"><b>${esc(t('Official sources'))}</b>${src.map(function(k){ const o = OFFICIAL[k]; return `<a href="${o[1]}" target="_blank" rel="noopener"><span>${ico('shield')}</span><span><b class="notr">${o[0]}</b><small>${esc(t(o[2]))}</small></span><span class="chev">›</span></a>`; }).join('')}<small class="g-src-n">${esc(t(note))}</small></div>`;
+      const html = `<div class="g-src"><b>${esc(t('Official sources'))}</b>${src.map(function(k){ const o = OFFICIAL[k]; return `<a href="${o[1]}" target="_blank" rel="noopener"><span>${ico('shield')}</span><span><b class="notr">${o[0]}</b><small>${esc(t(o[2]))}</small></span><span class="chev">›</span></a>`; }).join('')}</div>`;
       if(rv) rv.insertAdjacentHTML('beforebegin', html); else body.insertAdjacentHTML('beforeend', html);
     }
     return r;
@@ -10269,5 +10266,7 @@ if(DS_TESTNET){
 <script src="/ds-receipt.js?v=2"></script>
 <script src="/ds-wallet.js?v=7"></script>
 <script src="/ds-transfer.js?v=2"></script>
+<link rel="stylesheet" href="/ds-pro.css?v=1">
+<script src="/ds-pro.js?v=1"></script>
 </body>
 </html>

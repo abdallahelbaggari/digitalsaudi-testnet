@@ -1,0 +1,34 @@
+/* DigitalSaudi — clearer structure and stronger, high-contrast colours (light and dark). Layout and features unchanged. */
+
+/* ── All services directory (Home) ── */
+.ds-dir{margin:22px 0 6px}
+.ds-dir-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 10px}
+.ds-dir-h h2{margin:0;font-size:20px;font-weight:800;letter-spacing:-.01em;color:var(--text)}
+.ds-dir-h span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.ds-dir-q{display:flex;align-items:center;gap:10px;width:100%;height:52px;padding:0 16px;margin-bottom:12px;border-radius:16px;border:1.5px solid var(--line);background:var(--bg-card);color:var(--muted);font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer;box-shadow:var(--shadow)}
+.ds-dir-q .i{width:20px;height:20px;color:var(--accent);flex:none}
+.ds-dir-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ds-dir-t{--c:var(--accent);display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;padding:13px 12px 12px;border-radius:18px;border:1.5px solid color-mix(in srgb,var(--c) 28%,var(--line));
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 16%,var(--bg-card)) 0%,var(--bg-card) 75%);color:var(--text);text-align:left;font:inherit;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s}
+.ds-dir-t:active{transform:scale(.97)}
+.ds-dir-t i{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:13px;background:var(--c);color:#fff;box-shadow:0 8px 16px -8px color-mix(in srgb,var(--c) 80%,transparent)}
+.ds-dir-t i .i{width:21px;height:21px}
+.ds-dir-t b{font-size:14px;font-weight:800;line-height:1.2;color:var(--text)}
+.ds-dir-t small{font-size:11.5px;line-height:1.35;color:var(--text-2);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ds-c-islamic{--c:var(--accent)} .ds-c-money{--c:#B7861A} .ds-c-travel{--c:#2479B5} .ds-c-work{--c:#5B4FC9} .ds-c-gov{--c:#0F766E}
+.ds-c-live{--c:#D9463A} .ds-c-explore{--c:#E07A1F} .ds-c-safety{--c:#C2263F} .ds-c-green{--c:#3F8F2A}
+@media (max-width:340px){.ds-dir-g{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ── stronger colour and contrast ── */
+h2.sec,.sec{font-weight:800;letter-spacing:-.01em;color:var(--text)}
+.qa span,.tile span{font-weight:700;color:var(--text)}
+.qa .ic,.tile .ic{background:var(--ic,var(--accent))!important;color:#fff!important;box-shadow:0 10px 20px -12px color-mix(in srgb,var(--ic,var(--accent)) 85%,transparent)}
+html:not([data-theme="light"]) .qa .ic,html:not([data-theme="light"]) .tile .ic{color:#07130E!important}
+.tile{border:1.5px solid var(--line)!important;box-shadow:var(--shadow)}
+.row,.card{border-width:1.5px}
+.row .tx b,.card h4{font-weight:700;color:var(--text)}
+.row .tx small,.card p{color:var(--text-2)}
+.btn-primary{font-weight:800;box-shadow:0 12px 24px -14px color-mix(in srgb,var(--accent) 90%,transparent)}
+.svc-chips button{border-width:1.5px}
+#nav button.active{font-weight:800}
+footer.legal{font-weight:600;color:var(--text-2)}
