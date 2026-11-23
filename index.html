@@ -3848,7 +3848,7 @@ function piAuth(){
     }, function(err){
       if(authInFlight === attempt) authInFlight = null;
       log('❌ Sign-in failed:', err && err.message ? err.message : err);
-      if(!piUser) toast('Sign-in failed. Please try again in the Pi Browser.');
+      if(!piUser){ const why = String((err && (err.message || err.error || err)) || '').slice(0, 140); toast('Sign-in failed' + (why ? ': ' + why : '') + '. Please try again.'); store.set('lastAuthError', { at: Date.now(), why: why }); }
       return false;
     });
     authInFlight = attempt;
