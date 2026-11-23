@@ -69,3 +69,20 @@
 .dw-lia{text-align:right;white-space:nowrap}.dw-lia b{display:block;font-family:ui-monospace,"JetBrains Mono",Menlo,monospace;font-size:15px}.dw-lia.in b{color:#10B981}.dw-lia small{display:block;font-size:12px;color:var(--text-2);opacity:.75;margin-top:2px}
 .dw-day{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--text-2);opacity:.7;margin:14px 4px 7px}
 #dwTabs{margin:0 0 10px}
+
+/* receipts, saving and sharing */
+.ds-rimg{width:100%;border-radius:18px;border:1px solid var(--line);display:block;box-shadow:0 18px 40px -22px rgba(6,78,59,.45)}
+.ds-ract{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.ds-ract .btn{width:100%;padding:14px 10px;font-weight:800}
+.ds-rlink{display:block;margin:12px auto 0;border:0;background:none;color:var(--accent);font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.ds-fnote{position:relative;margin-top:14px;padding:16px 44px 16px 16px;border-radius:16px;background:var(--bg-card);border:1.5px solid var(--accent);box-shadow:0 16px 34px -20px rgba(6,78,59,.55)}
+.ds-fnote>b{display:block;font-size:15.5px;margin-bottom:4px}.ds-fnote p{margin:0 0 12px;font-size:14px;line-height:1.5;color:var(--text-2)}
+.ds-fx{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:10px;border:0;background:var(--bg-card-2);color:var(--text);font-size:14px;cursor:pointer}
+/* activity: count, sorting, statement and CSV */
+.dw-sort{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 4px;font-size:13px;font-weight:700;color:var(--text-2)}
+.dw-sort button{padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg-card);color:var(--accent);font:inherit;font-weight:800;font-size:13px;cursor:pointer}
+.dw-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.dw-two .btn{width:100%;font-weight:800}
+/* stronger contrast */
+.dw-lit b,.dw-lia b,.dw-sh h3,.dw-hello h2{color:var(--text)}
+.dw-lic{background:rgba(10,122,75,.16)}.dw-lic.in{background:rgba(16,185,129,.2)}
+.dw-list,.dw-sec{border-width:1.5px}
+.dw-tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}

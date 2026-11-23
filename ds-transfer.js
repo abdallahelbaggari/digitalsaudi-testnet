@@ -40,7 +40,7 @@
     R.unshift({ amount: +t.amount, memo: t.narr || 'Pi transfer', item: t.narr || 'Pi transfer', kind: 'p2p', inapp: true, dir: dir, ts: t.done_ts || Date.now(),
       name: inn ? fullName() : fullName(), user: inn ? me() : '', seller: inn ? fullName() : who, other: inn ? '@' + t.from : who, from: inn ? '@' + t.from : fullName(),
       to: t.to_addr || '', ref: t.pid, net: NETN, txid: t.txid, status: 'Verified', usd: p && p.usd, sar: p && (p.sar || (p.usd && p.usd * 3.75)) });
-    store.set('rcpts', R.slice(0, 200)); return true;
+    store.set('rcpts', R.slice(0, 2500)); if (window.dsHistSoon) dsHistSoon(); return true;
   }
   function saveRefund(t) {
     if (!t.refund_txid) return false;

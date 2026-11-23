@@ -2,9 +2,9 @@
 // - App shell cached on install (works offline)
 // - Network-first for GET requests, falling back to the last saved copy
 // - Payments, Premium, AI and admin are never cached
-const CACHE = 'digitalsaudi-v46';
+const CACHE = 'digitalsaudi-v47';
 const SHELL = ['/', '/index.html', '/manifest.json', '/icon.svg', '/icon-192.png', '/privacy.html', '/terms.html'];
-const NEVER = ['/transfer', '/users', '/setup.html', '/approve', '/complete', '/cancel-payment', '/premium', '/ai', '/admin-api', '/admin.html', '/admin', '/pi-check', '/dict', '/translate', '/poster-file', '/match', '/quran-audio', '/referral', '/verify'];
+const NEVER = ['/transfer', '/users', '/setup.html', '/file', '/f/', '/r/', '/history', '/approve', '/complete', '/cancel-payment', '/premium', '/ai', '/admin-api', '/admin.html', '/admin', '/pi-check', '/dict', '/translate', '/poster-file', '/match', '/quran-audio', '/referral', '/verify'];
 
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
@@ -15,7 +15,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const u = new URL(req.url);
-  if (u.origin === location.origin && NEVER.includes(u.pathname)) return;
+  if (u.origin === location.origin && (NEVER.includes(u.pathname) || /^\/(f|r)\//.test(u.pathname))) return;
   if (u.hostname.endsWith('minepi.com')) return;                                   // Pi SDK always live
   if (/basemaps\.cartocdn\.com|tile\.openstreetmap\.org/.test(u.hostname)) return;       // map tiles: browser cache only
   if (req.destination === 'image' && u.origin !== location.origin) return;          // news images / crests
