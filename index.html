@@ -3832,7 +3832,7 @@ function piAuth(){
   if(!authInFlight || Date.now() - authStartedAt >= 20000){
     log('Sign-in started');
     authStartedAt = Date.now();
-    const attempt = Pi.authenticate(['username','payments'], onIncompletePaymentFound).then(function(auth){
+    const attempt = Pi.authenticate(['username','payments','wallet_address'], onIncompletePaymentFound).then(function(auth){
       if(authInFlight === attempt) authInFlight = null;
       if(!piUser) onPiAuth(auth); else piUser.accessToken = auth.accessToken;
       return true;
