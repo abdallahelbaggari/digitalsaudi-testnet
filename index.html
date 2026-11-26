@@ -10266,5 +10266,15 @@ if(DS_TESTNET){
 <link rel="stylesheet" href="/ds-pro.css?v=9">
 <script src="/ds-quran.js?v=2"></script>
 <script src="/ds-pro.js?v=4"></script>
+
+
+<script id="wallet-link">(function () {
+  /* Wallet: the full DigitalSaudi Wallet opens on its own page */
+  function W(h) { location.href = '/wallet.html' + (h || ''); }
+  function install() { var o = window.openItem; if (o && !o.__wl) { window.openItem = function (id) { if (id === 'piWallet') return W(); return o.apply(this, arguments); }; window.openItem.__wl = 1; } }
+  install(); addEventListener('DOMContentLoaded', install); addEventListener('load', function () { install(); setTimeout(install, 0); setTimeout(install, 1500); });
+  document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('[onclick]'); if (!t) return; if (/^\s*openItem\('piWallet'\)\s*;?\s*$/.test(t.getAttribute('onclick') || '')) { e.preventDefault(); e.stopPropagation(); W(); } }, true);
+  if (/^#(wallet|piWallet)$/.test(location.hash)) W();
+})();</script>
 </body>
 </html>
