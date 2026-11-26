@@ -10268,6 +10268,7 @@ if(DS_TESTNET){
 <script src="/ds-pro.js?v=4"></script>
 
 
+
 <script id="wallet-link">(function () {
   /* Wallet: the full DigitalSaudi Wallet opens on its own page */
   function W(h) { location.href = '/wallet.html' + (h || ''); }
@@ -10275,6 +10276,9 @@ if(DS_TESTNET){
   install(); addEventListener('DOMContentLoaded', install); addEventListener('load', function () { install(); setTimeout(install, 0); setTimeout(install, 1500); });
   document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('[onclick]'); if (!t) return; if (/^\s*openItem\('piWallet'\)\s*;?\s*$/.test(t.getAttribute('onclick') || '')) { e.preventDefault(); e.stopPropagation(); W(); } }, true);
   if (/^#(wallet|piWallet)$/.test(location.hash)) W();
+  // back from the wallet's bottom bar: open the chosen section
+  var m = /^#tab=(home|live|explore|tools)$/.exec(location.hash);
+  if (m) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} var go = function () { try { if (window.switchTab) switchTab(m[1]); } catch (e) {} }; if (document.readyState === 'complete') go(); else addEventListener('load', function () { go(); setTimeout(go, 600); }); }
 })();</script>
 </body>
 </html>
