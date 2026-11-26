@@ -827,7 +827,7 @@ html.fp-staff body>:not(#staffv):not(#toast):not(.sh-wrap):not(script):not(#netb
 @media (max-width:429px){#top .brand img{display:none}}
 #top .brand .bk{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.14);font-size:24px;line-height:1;margin-right:2px}
 
-/* ── DigitalSaudi: the app's own bottom bar stays; wallet sections sit under the header ── */
+/* ── the app's own bottom bar stays; wallet sections sit under the header ── */
 #top{flex-wrap:wrap;row-gap:0}
 #top .brand{flex:0 1 auto!important;margin-right:6px!important}
 #top .top-r{margin-left:auto}
@@ -854,3 +854,4 @@ html.fp-staff #hostnav{display:none}
 @keyframes wlspin{to{transform:rotate(360deg)}}
 @media (max-width:459px){#tabs button span.b{display:none!important}}
 @media (max-width:379px){#tabs button,#tabs button.on{font-size:11px;padding:0 2px;letter-spacing:-.01em}#tabs{gap:4px}}
+#hostnav .e{font-size:22px;line-height:24px;height:24px}
