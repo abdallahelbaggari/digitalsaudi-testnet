@@ -4086,7 +4086,7 @@ document.addEventListener('DOMContentLoaded', function(){
   setupInfinite();
   const off = function(){ $('offline').classList.toggle('on', !navigator.onLine); };
   window.addEventListener('online', function(){ off(); toast('Back online'); }); window.addEventListener('offline', off); off();
-  if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(function(){}); addEventListener('load', function () { navigator.serviceWorker.ready.then(function (reg) { setTimeout(function () { try { var o = location.origin, L = [location.pathname + location.search].concat(performance.getEntriesByType('resource').map(function (x) { return x.name; }).filter(function (x) { return x.indexOf(o + '/') === 0 && !/\.(mp4|webm|mp3)(\?|$)/.test(x); }).map(function (x) { return x.slice(o.length); })); if (reg.active) reg.active.postMessage({ warm: L }); } catch (e) {} }, 3000); }); }); }
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(function(){}); addEventListener('load', function () { navigator.serviceWorker.ready.then(function (reg) { setTimeout(function () { try { var o = location.origin, L = [location.pathname + location.search].concat(performance.getEntriesByType('resource').map(function (x) { return x.name; }).filter(function (x) { return x.indexOf(o + '/') === 0 && !/\.(mp4|webm|mp3)(\?|$)/.test(x); }).map(function (x) { return x.slice(o.length); })); if (reg.active) reg.active.postMessage({ warm: L }); } catch (e) {} }, 20000); }); }); }
 });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closePanel(); });
 
@@ -7857,7 +7857,7 @@ function srAllLangs(text){
   window.ovEnd = function(){
     if(!open && !el.classList.contains('open')) return;
     open = false; cancelAnimationFrame(raf); clearTimeout(watchdog); clearTimeout(endT);
-    try{ v.pause(); }catch(e){}
+    try{ v.pause(); v.removeAttribute('src'); v.load(); }catch(e){}
     try{ if(window.dsAmb) dsAmb.stop(); }catch(e){}
     const sb = $('ovSound'); if(sb){ sb.classList.remove('on'); sb.setAttribute('aria-pressed', 'false'); }
     document.removeEventListener('keydown', keys);
